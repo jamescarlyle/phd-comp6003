@@ -8,6 +8,9 @@ POLE_HALF = 0.5 # half the pole length in metres
 FORCE_MAG = 10.0 # magnitude of the left/right push force in Newtons
 DT        = 0.02 # Euler integration timestep in seconds
 MAX_STEPS = 500 # episode length cap — reaching this means "solved"
+# combined mass used in denominator of equations of motion 
+total_mass = CART_MASS + POLE_MASS
+pole_mass_length = POLE_MASS * POLE_HALF
 
 def step(state, action, slope_angle):
     x_position, x_velocity, pole_angle, pole_angular_velocity = state
@@ -17,8 +20,6 @@ def step(state, action, slope_angle):
     g_along = GRAVITY * math.sin(slope_angle)
     # gravity component normal to slope (effective local g)
     g_perpendicular = GRAVITY * math.cos(slope_angle)
-    # combined mass used in denominator of equations of motion 
-    total_mass = CART_MASS + POLE_MASS 
     # cache cosine of pole angle to avoid recomputing 
     cos_pole_angle = math.cos(pole_angle)
     # cache sine of pole angle to avoid recomputing
@@ -41,6 +42,58 @@ def step(state, action, slope_angle):
     done = abs(updated_position) > 2.4 or abs(updated_pole_angle) > math.radians(24)
     # return new state tuple and termination flag
     return (updated_position, updated_velocity, updated_pole_angle, updated_pole_angular), done
+
+import math
+
+def gemini_step(state, action, slope_angle):
+    x_position, x_velocity, pole_angle, pole_angular_velocity = state
+    
+    # Constants (Assuming standard OpenAI Gym values)
+    FORCE_MAG = 10.0
+    GRAVITY = 9.8
+    CART_MASS = 1.0
+    POLE_MASS = 0.1
+    POLE_HALF = 0.5
+    DT = 0.02
+    total_mass = CART_MASS + POLE_MASS
+    pole_mass_length = POLE_MASS * POLE_HALF
+
+    # 1. Map action to force
+    force = FORCE_MAG if action == 1 else -FORCE_MAG
+    
+    # 2. Gravity components
+    g_sin_slope = GRAVITY * math.sin(slope_angle)
+    g_cos_slope = GRAVITY * math.cos(slope_angle)
+
+    # 3. Cache trig for pole
+    sin_theta = math.sin(pole_angle)
+    cos_theta = math.cos(pole_angle)
+
+    # 4. Corrected Net Horizontal Term
+    # We subtract the total system weight pulling down the slope
+    temp = (force + pole_mass_length * pole_angular_velocity**2 * sin_theta - total_mass * g_sin_slope) / total_mass
+
+    # 5. Corrected Angular Acceleration
+    # The gravity term must account for the slope: g*sin(theta - slope)
+    # which expands to: g*sin(theta)*cos(slope) - g*cos(theta)*sin(slope)
+    numerator = (g_cos_slope * sin_theta - g_sin_slope * cos_theta) - cos_theta * temp
+    denominator = POLE_HALF * (4.0/3.0 - POLE_MASS * cos_theta**2 / total_mass)
+    
+    th_acc = numerator / denominator
+
+    # 6. Linear Acceleration
+    cart_accel = temp - (pole_mass_length * th_acc * cos_theta) / total_mass
+
+    # 7. Integration (Semi-Implicit Euler)
+    new_v = x_velocity + DT * cart_accel
+    new_x = x_position + DT * new_v
+    new_w = pole_angular_velocity + DT * th_acc
+    new_th = pole_angle + DT * new_w
+
+    # 8. Termination conditions
+    done = abs(new_x) > 2.4 or abs(new_th) > math.radians(24)
+
+    return (new_x, new_v, new_th, new_w), done
 
 # mutable list so inner functions can increment without global
 _innovation_counter = [0] 

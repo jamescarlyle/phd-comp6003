@@ -60,6 +60,18 @@ Typical NEAT: 100-500 genomes, 100-5000 generations. i.e. 100K networks instanti
 # Rules for Evaluation
 ![h:500px](./images/rules.png)
 
+--- 
+# How will Ablation be measured?
+* The primary measure is fitness.
+* We plan to follow this assessment protocol:
+  
+1. Stage: Full model. Objective: Baseline, understand the basic behaviour of the trained system.
+2. Frozen weights (no plasticity). Objective: Value of online learning.
+3. Remove normalization (pure Hebbian). Objective: Oja / other rules' stabilization term.
+4. Zero learning rate. Objective: Structural vs. learning contribution.
+5. Random plasticity coefficients. Objective: NEAT-evolved plasticity parameters.
+6. Rule swap (Oja ↔ BCM). Objective: Rule-specific contribution
+
 ---
 ![bg right w:400px h:200px](./images/Lander_Gif_2.gif)
 ![bg w:400px h:200px](./images/Lunar_Lander_Fitness_2.png)
