@@ -6,10 +6,12 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "ffmpeg>=1.4",
-    "gymnasium[mujoco]>=1.2.3",
+    "graphviz>=0.21",
+    "gymnasium[mujoco,other]>=1.2.3",
     "kaleido>=1.2.0",
     "marimo>=0.20.2",
     "matplotlib>=3.10.8",
+    "mediapy>=1.2.6",
     "neat-python>=2.0.0",
     "networkx>=3.6.1",
     "numpy>=2.4.2",
@@ -18,4 +20,10 @@ dependencies = [
     "pygame>=2.6.1",
     "scipy>=1.17.1",
     "visualize>=0.5.1",
+]
+
+[tool.uv.workspace]
+members = [
+    "james/tensorneat-hopper",
+    "james/industrial-cstr",
 ]

@@ -1,0 +1,19 @@
+[project]
+name = "hopper-plain-vanilla"
+version = "0.1.0"
+description = "Neuroevolution research using TensorNEAT"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jax[cpu]==0.4.35",
+    "jaxlib==0.4.35",
+    "jax-metal==0.1.0",
+    "tensorneat @ git+https://github.com/EMI-Group/tensorneat.git",
+    "mujoco[warp]>=3.6.0",
+    "gymnax>=0.0.9",
+    "gymnasium[mujoco]>=1.2.3",
+]
+
+[tool.uv]
+# This automatically fixes the 'default_memory_space' error on your Mac
+env-vars = { JAX_METAL_COLLECTIVE_OPS = "0" }

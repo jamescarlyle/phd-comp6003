@@ -1,152 +1,155 @@
-"""
-Evolve a control network for the Gymnasium Hopper-v5 environment.
-
-The Hopper is a two-dimensional one-legged robot. The goal is to hop
-forward as far as possible without falling.
-"""
-
-import multiprocessing
+#!/usr/bin/env python3
 import os
+import sys
+import glob
+import shutil
 import pickle
+import multiprocessing as mp
 
 import gymnasium as gym
 import neat
-import visualize
+import numpy as np
 
-# Evaluation parameters
-runs_per_net = 3
-max_steps = 2000
+GENERATIONS = 500
+EPISODES_PER_GENOME = 4
+MAX_STEPS = 1000
+STALL_STEP_LIMIT = 120
+MIN_PROGRESS_DELTA = 0.15
+VIDEO_OUTPUT = 'hopper_winner_episode.mp4'
+GENOME_OUTPUT = 'winner_hopper_genome.pkl'
+CONFIG_SNAPSHOT_OUTPUT = 'winner_hopper_config.pkl'
+STATS_OUTPUT = 'evolution_statistics.pkl'
+
+
+def make_env(render_mode=None):
+    return gym.make('Hopper-v5', render_mode=render_mode)
+
+
+def evaluate_single_episode(net, seed=None):
+    env = make_env()
+    obs, info = env.reset(seed=seed)
+
+    start_x = info.get('x_position', 0.0)
+    last_x = start_x
+    best_x = start_x
+    total_reward = 0.0
+    progress_stall_steps = 0
+    joint_motion_sum = 0.0
+    action_energy_sum = 0.0
+    steps = 0
+
+    for step in range(MAX_STEPS):
+        raw_action = np.asarray(net.activate(obs), dtype=np.float32)
+        action = np.tanh(raw_action).astype(np.float32)
+        prev_joint_angles = obs[1:4].copy()
+
+        obs, reward, terminated, truncated, info = env.step(action)
+        total_reward += reward
+        steps = step + 1
+
+        current_x = info.get('x_position', last_x)
+        best_x = max(best_x, current_x)
+
+        joint_delta = np.abs(obs[1:4] - prev_joint_angles)
+        joint_motion_sum += float(np.sum(joint_delta))
+        action_energy_sum += float(np.sum(np.abs(action)))
+
+        if current_x > last_x + 1e-4:
+            progress_stall_steps = 0
+        else:
+            progress_stall_steps += 1
+
+        last_x = current_x
+
+        if progress_stall_steps >= STALL_STEP_LIMIT and (best_x - start_x) < MIN_PROGRESS_DELTA:
+            break
+
+        if terminated or truncated:
+            break
+
+    env.close()
+
+    distance = best_x - start_x
+    avg_joint_motion = joint_motion_sum / max(steps, 1)
+    avg_action_energy = action_energy_sum / max(steps, 1)
+    survived_ratio = steps / MAX_STEPS
+
+    distance_score = max(distance, -1.0) * 150.0
+    reward_score = total_reward * 0.15
+    articulation_bonus = min(avg_joint_motion, 0.35) * 80.0
+    active_control_bonus = min(avg_action_energy, 1.8) * 12.0
+
+    if distance < 0.25:
+        no_progress_penalty = 90.0
+    elif distance < 0.75:
+        no_progress_penalty = 35.0
+    else:
+        no_progress_penalty = 0.0
+
+    if avg_joint_motion < 0.03:
+        articulation_penalty = 60.0
+    elif avg_joint_motion < 0.06:
+        articulation_penalty = 20.0
+    else:
+        articulation_penalty = 0.0
+
+    fall_penalty = 0.0 if survived_ratio > 0.95 else (1.0 - survived_ratio) * 40.0
+
+    fitness = (distance_score + reward_score + articulation_bonus + active_control_bonus
+        - no_progress_penalty - articulation_penalty - fall_penalty)
+
+    return fitness
 
 
 def eval_genome(genome, config):
-    """Evaluate a single genome on the Hopper-v5 environment.
-
-    Returns the average fitness over multiple runs.
-    """
     net = neat.nn.FeedForwardNetwork.create(genome, config)
-    fitnesses = []
-
-    for _ in range(runs_per_net):
-        # Create a fresh environment for each run (no rendering during training).
-        env = gym.make("Hopper-v5")
-        observation, info = env.reset()
-
-        total_reward = 0.0
-        for _ in range(max_steps):
-            # Network outputs three continuous action values in [-1, 1].
-            action = net.activate(observation)
-
-            observation, reward, terminated, truncated, info = env.step(action)
-            total_reward += reward
-
-            if terminated or truncated:
-                break
-
-        env.close()
-        fitnesses.append(total_reward)
-
-    # Use the average reward over runs as the fitness.
-    return sum(fitnesses) / len(fitnesses)
+    episode_scores = []
+    for seed in range(EPISODES_PER_GENOME):
+        episode_scores.append(evaluate_single_episode(net, seed=seed))
+    return float(np.mean(episode_scores))
 
 
-def eval_genomes(genomes, config):
-    """Evaluate all genomes in the population."""
-    for genome_id, genome in genomes:
-        genome.fitness = eval_genome(genome, config)
-
-
-def run(config_file):
-    """Run NEAT to evolve a controller for Hopper-v5."""
-    # Load configuration.
+def run(config_path):
     config = neat.Config(
         neat.DefaultGenome,
         neat.DefaultReproduction,
         neat.DefaultSpeciesSet,
         neat.DefaultStagnation,
-        config_file,
+        config_path,
     )
 
-    # Create the population, which is the top-level object for a NEAT run.
-    p = neat.Population(config)
-
-    # Add a stdout reporter to show progress in the terminal.
-    p.add_reporter(neat.StdOutReporter(True))
+    population = neat.Population(config)
+    population.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
-    p.add_reporter(stats)
-    # Periodic checkpoints, similar to other examples.
-    p.add_reporter(neat.Checkpointer(10))
+    population.add_reporter(stats)
 
-    # Use parallel evaluation across available CPU cores.
-    pe = neat.ParallelEvaluator(multiprocessing.cpu_count(), eval_genome)
+    workers = max(1, mp.cpu_count() - 1)
+    pe = neat.ParallelEvaluator(workers, eval_genome)
+    print(f'Using {workers} worker processes for genome evaluation.')
 
-    # Run until solution or fitness threshold is reached (see config).
-    winner = p.run(pe.evaluate, 500)
+    winner = population.run(pe.evaluate, GENERATIONS)
 
-    # Display the winning genome.
-    print(f"\nBest genome:\n{winner!s}")
-
-    # Save the winner for later reuse in test-feedforward.py.
-    with open("winner-feedforward.pickle", "wb") as f:
+    with open(GENOME_OUTPUT, 'wb') as f:
         pickle.dump(winner, f)
+    with open(CONFIG_SNAPSHOT_OUTPUT, 'wb') as f:
+        pickle.dump(config, f)
+    with open(STATS_OUTPUT, 'wb') as f:
+        pickle.dump(stats, f)
 
-    # Fitness & species plots (analogous to other examples).
-    visualize.plot_stats(
-        stats,
-        ylog=False,
-        view=True,
-        filename="feedforward-fitness.svg",
-    )
-    visualize.plot_species(
-        stats,
-        view=True,
-        filename="feedforward-speciation.svg",
-    )
-
-    # Node labels for easier interpretation of the evolved controller.
-    # Hopper-v5 observations form an 11D vector including torso height,
-    # torso angle, joint angles, and their velocities. We give a few
-    # illustrative labels here for readability.
-    node_names = {
-        -1: "z",
-        -2: "theta",
-        -3: "thigh_angle",
-        -4: "leg_angle",
-        -5: "foot_angle",
-        -6: "z_vel",
-        -7: "theta_vel",
-        -8: "thigh_vel",
-        -9: "leg_vel",
-        -10: "foot_vel",
-        -11: "x_vel",
-        0: "thigh_torque",
-        1: "leg_torque",
-        2: "foot_torque",
-    }
-
-    # Full and pruned network diagrams for the winning genome.
-    visualize.draw_net(
-        config,
-        winner,
-        view=True,
-        node_names=node_names,
-        filename="winner-feedforward.gv",
-    )
-    visualize.draw_net(
-        config,
-        winner,
-        view=True,
-        node_names=node_names,
-        filename="winner-feedforward-pruned.gv",
-        prune_unused=True,
-    )
-
-    return winner, stats
+    print('\n' + '=' * 60)
+    print('EVOLUTION COMPLETE')
+    print('=' * 60)
+    print(f'Best genome fitness: {winner.fitness:.4f}')
+    print(f'Best genome complexity: {len(winner.nodes)} nodes, {len(winner.connections)} connections')
+    print(f'Winner genome saved to: {GENOME_OUTPUT}')
+    print(f'Config snapshot saved to: {CONFIG_SNAPSHOT_OUTPUT}')
+    print(f'Statistics saved to: {STATS_OUTPUT}')
 
 
-if __name__ == "__main__":
-    # Determine path to configuration file. This path manipulation is
-    # here so that the script will run successfully regardless of the
-    # current working directory.
+if __name__ == '__main__':
     local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, "config-feedforward")
+    config_path = os.path.join(local_dir, 'config-feedforward')
+    if not os.path.exists(config_path):
+        print(f'Error: missing config file at {config_path}')
+        sys.exit(1)
     run(config_path)

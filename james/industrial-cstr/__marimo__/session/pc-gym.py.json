@@ -1,0 +1,166 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.23.6",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "08a2b297c6124a686489c4cccd8dd8ae",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "5b6c52400c2d7719c8aff644ee1cc833",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "f06eeece38c6a29ddee9ce4efc65b903",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "0cec58c6d5a6d9d83a3bf5bbe153327d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "5c230f957e66cd6f477a11f1a2e92bde",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "09b2d92d18f8fd1401839e99da33ba2d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "8cf8e42c10e0f8238d16268cee65a9c1",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "<built-in function integrator> returned a result with an exception set",
+          "traceback": null
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "\n ****** Running generation 0 ****** \n\nunique fitnesses (6dp): 2\nmin/mean/max: -75.90249198177456 -75.90249149403299 -75.90249094303893\nPopulation's average fitness: -75.90249 stdev: 0.00000\nBest fitness: -75.90249 - size: (1, 3) - species 2 - id 90\nAverage adjusted fitness: 0.000\nMean genetic distance 1.996, standard deviation 0.647\nPopulation of 100 members in 2 species (after reproduction):\n   ID   age  size   fitness   adj fit  stag\n  ====  ===  ====  =========  =======  ====\n     1    0    50    -75.902    0.000     0\n     2    0    50    -75.902    0.000     0\nTotal extinctions: 0\nGeneration time: 3.745 sec\n\n ****** Running generation 1 ****** \n\nunique fitnesses (6dp): 2\nmin/mean/max: -75.90249195798164 -75.90249107870723 -75.90249093840069\nPopulation's average fitness: -75.90249 stdev: 0.00000\nBest fitness: -75.90249 - size: (1, 3) - species 1 - id 135\nAverage adjusted fitness: 0.000\nMean genetic distance 1.846, standard deviation 0.516\nPopulation of 100 members in 2 species (after reproduction):\n   ID   age  size   fitness   adj fit  stag\n  ====  ===  ====  =========  =======  ====\n     1    1    25    -75.902    0.000     0\n     2    1    75    -75.902    0.000     0\nTotal extinctions: 0\nGeneration time: 3.789 sec (3.767 average)\n\n ****** Running generation 2 ****** \n\nunique fitnesses (6dp): 2\nmin/mean/max: -75.90249197759863 -75.90249112886907 -75.90249093840069\nPopulation's average fitness: -75.90249 stdev: 0.00000\nBest fitness: -75.90249 - size: (1, 3) - species 2 - id 135\nAverage adjusted fitness: 0.000\nMean genetic distance 1.736, standard deviation 0.542\nPopulation of 100 members in 2 species (after reproduction):\n   ID   age  size   fitness   adj fit  stag\n  ====  ===  ====  =========  =======  ====\n     1    2    45    -75.902    0.000     1\n     2    2    55    -75.902    0.000     0\nTotal extinctions: 0\nGeneration time: 3.770 sec (3.768 average)\n\n ****** Running generation 3 ****** \n\n",
+          "mimetype": "text/plain"
+        },
+        {
+          "type": "stream",
+          "name": "stderr",
+          "text": "<span class=\"codehilite\"><div class=\"highlight\"><pre><span></span><span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;/Users/jamescarlyle/phd/sust6003-core/.venv/lib/python3.13/site-packages/casadi/casadi.py&quot;</span>, line <span class=\"m\">18148</span>, in <span class=\"n\">&lt;lambda&gt;</span>\n<span class=\"w\">    </span><span class=\"fm\">__setattr__</span> <span class=\"o\">=</span> <span class=\"k\">lambda</span> <span class=\"bp\">self</span><span class=\"p\">,</span> <span class=\"n\">name</span><span class=\"p\">,</span> <span class=\"n\">value</span><span class=\"p\">:</span> <span class=\"n\">_swig_setattr</span><span class=\"p\">(</span><span class=\"bp\">self</span><span class=\"p\">,</span> <span class=\"n\">Function</span><span class=\"p\">,</span> <span class=\"n\">name</span><span class=\"p\">,</span> <span class=\"n\">value</span><span class=\"p\">)</span>\n<span class=\"x\">    </span>\n  File <span class=\"nb\">&quot;/Users/jamescarlyle/phd/sust6003-core/.venv/lib/python3.13/site-packages/marimo/_runtime/handlers.py&quot;</span>, line <span class=\"m\">51</span>, in <span class=\"n\">interrupt_handler</span>\n<span class=\"w\">    </span><span class=\"k\">raise</span> <span class=\"n\">MarimoInterrupt</span>\n<span class=\"gr\">KeyboardInterrupt</span>\n\n<span class=\"gt\">The above exception was the direct cause of the following exception:</span>\n\n<span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;/Users/jamescarlyle/phd/sust6003-core/.venv/lib/python3.13/site-packages/marimo/_runtime/executor.py&quot;</span>, line <span class=\"m\">138</span>, in <span class=\"n\">execute_cell</span>\n<span class=\"w\">    </span><span class=\"n\">exec</span><span class=\"p\">(</span><span class=\"n\">cell</span><span class=\"o\">.</span><span class=\"n\">body</span><span class=\"p\">,</span> <span class=\"n\">glbls</span><span class=\"p\">)</span>\n<span class=\"w\">    </span><span class=\"pm\">~~~~^^^^^^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/var/folders/hk/jxwrzv7s4nz99g0n3vn96j_r0000gn/T/marimo_2447/__marimo__cell_Xref_.py&quot;</span>, line <span class=\"m\">24</span>, in <span class=\"n\">&lt;module&gt;</span>\n<span class=\"w\">    </span><span class=\"n\">winner</span> <span class=\"o\">=</span> <span class=\"n\">population</span><span class=\"o\">.</span><span class=\"n\">run</span><span class=\"p\">(</span><span class=\"n\">eval_genomes</span><span class=\"p\">,</span> <span class=\"n\">N_GENERATIONS</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/Users/jamescarlyle/phd/sust6003-core/.venv/lib/python3.13/site-packages/neat/population.py&quot;</span>, line <span class=\"m\">104</span>, in <span class=\"n\">run</span>\n<span class=\"w\">    </span><span class=\"n\">fitness_function</span><span class=\"p\">(</span><span class=\"nb\">list</span><span class=\"p\">(</span><span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">population</span><span class=\"o\">.</span><span class=\"n\">items</span><span class=\"p\">()),</span> <span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">config</span><span class=\"p\">)</span>\n<span class=\"w\">    </span><span class=\"pm\">~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/var/folders/hk/jxwrzv7s4nz99g0n3vn96j_r0000gn/T/marimo_2447/__marimo__cell_PKri_.py&quot;</span>, line <span class=\"m\">11</span>, in <span class=\"n\">eval_genomes</span>\n<span class=\"w\">    </span><span class=\"n\">res</span> <span class=\"o\">=</span> <span class=\"n\">run_episode</span><span class=\"p\">(</span><span class=\"n\">net</span><span class=\"p\">,</span> <span class=\"n\">seed_offset</span><span class=\"o\">=</span><span class=\"mi\">1000</span> <span class=\"o\">*</span> <span class=\"n\">genome_id</span> <span class=\"o\">+</span> <span class=\"n\">ep</span><span class=\"p\">,</span> <span class=\"n\">return_trace</span><span class=\"o\">=</span><span class=\"kc\">False</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/var/folders/hk/jxwrzv7s4nz99g0n3vn96j_r0000gn/T/marimo_2447/__marimo__cell_bkHC_.py&quot;</span>, line <span class=\"m\">62</span>, in <span class=\"n\">run_episode</span>\n<span class=\"w\">    </span><span class=\"n\">obs</span><span class=\"p\">,</span> <span class=\"n\">rew</span><span class=\"p\">,</span> <span class=\"n\">done</span><span class=\"p\">,</span> <span class=\"n\">info</span> <span class=\"o\">=</span> <span class=\"n\">step_env</span><span class=\"p\">(</span><span class=\"n\">env</span><span class=\"p\">,</span> <span class=\"n\">action</span><span class=\"p\">)</span>\n<span class=\"w\">                           </span><span class=\"pm\">~~~~~~~~^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/var/folders/hk/jxwrzv7s4nz99g0n3vn96j_r0000gn/T/marimo_2447/__marimo__cell_bkHC_.py&quot;</span>, line <span class=\"m\">24</span>, in <span class=\"n\">step_env</span>\n<span class=\"w\">    </span><span class=\"n\">out</span> <span class=\"o\">=</span> <span class=\"n\">env</span><span class=\"o\">.</span><span class=\"n\">step</span><span class=\"p\">(</span><span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">asarray</span><span class=\"p\">(</span><span class=\"n\">action</span><span class=\"p\">,</span> <span class=\"n\">dtype</span><span class=\"o\">=</span><span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">float32</span><span class=\"p\">))</span>\n  File <span class=\"nb\">&quot;/Users/jamescarlyle/phd/sust6003-core/.venv/lib/python3.13/site-packages/pcgym/pcgym.py&quot;</span>, line <span class=\"m\">367</span>, in <span class=\"n\">step</span>\n<span class=\"w\">    </span><span class=\"n\">Fk</span> <span class=\"o\">=</span> <span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">int_eng</span><span class=\"o\">.</span><span class=\"n\">casadi_step</span><span class=\"p\">(</span><span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">state</span><span class=\"p\">,</span> <span class=\"n\">uk</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/Users/jamescarlyle/phd/sust6003-core/.venv/lib/python3.13/site-packages/pcgym/integrator.py&quot;</span>, line <span class=\"m\">102</span>, in <span class=\"n\">casadi_step</span>\n<span class=\"w\">    </span><span class=\"n\">discretised_plant</span> <span class=\"o\">=</span> <span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">discretise_model</span><span class=\"p\">(</span><span class=\"n\">plant_func</span><span class=\"p\">,</span> <span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">env</span><span class=\"o\">.</span><span class=\"n\">dt</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/Users/jamescarlyle/phd/sust6003-core/.venv/lib/python3.13/site-packages/pcgym/integrator.py&quot;</span>, line <span class=\"m\">181</span>, in <span class=\"n\">discretise_model</span>\n<span class=\"w\">    </span><span class=\"n\">discrete_model</span> <span class=\"o\">=</span> <span class=\"n\">integrator</span><span class=\"p\">(</span><span class=\"s2\">&quot;discrete_model&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;cvodes&quot;</span><span class=\"p\">,</span> <span class=\"n\">dae</span><span class=\"p\">,</span> <span class=\"n\">t0</span><span class=\"p\">,</span> <span class=\"n\">tf</span><span class=\"p\">,)</span>\n  File <span class=\"nb\">&quot;/Users/jamescarlyle/phd/sust6003-core/.venv/lib/python3.13/site-packages/casadi/casadi.py&quot;</span>, line <span class=\"m\">25926</span>, in <span class=\"n\">integrator</span>\n<span class=\"w\">    </span><span class=\"k\">return</span> <span class=\"n\">_casadi</span><span class=\"o\">.</span><span class=\"n\">integrator</span><span class=\"p\">(</span><span class=\"o\">*</span><span class=\"n\">args</span><span class=\"p\">)</span>\n<span class=\"w\">           </span><span class=\"pm\">~~~~~~~~~~~~~~~~~~^^^^^^^</span>\n<span class=\"gr\">SystemError</span>: <span class=\"n\">&lt;built-in function integrator&gt; returned a result with an exception set</span>\n</pre></div>\n</span>",
+          "mimetype": "application/vnd.marimo+traceback"
+        }
+      ]
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "177c34742d0edba577983fbd6c88e14b",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (SystemError): ",
+          "traceback": null
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Winner fitness: -75.90249091222506\nWinner total reward: -75.90249091222506\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "ea3b47b11b9a3b4437927ecdbc5dc19d",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (SystemError): ",
+          "traceback": null
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "84ab9fdff012d96904fa93f935c52613",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (SystemError): ",
+          "traceback": null
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stderr",
+          "text": "<span class=\"codehilite\"><div class=\"highlight\"><pre><span></span><span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;/var/folders/hk/jxwrzv7s4nz99g0n3vn96j_r0000gn/T/marimo_2317/__marimo__cell_RGSE_.py&quot;</span>, line <span class=\"m\">4</span>, in <span class=\"n\">&lt;module&gt;</span>\n<span class=\"w\">    </span><span class=\"k\">with</span> <span class=\"nb\">open</span><span class=\"p\">(</span><span class=\"n\">OUTDIR</span> <span class=\"o\">/</span> <span class=\"s2\">&quot;winner.pkl&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;rb&quot;</span><span class=\"p\">)</span> <span class=\"k\">as</span> <span class=\"n\">f</span><span class=\"p\">:</span>\n<span class=\"w\">              </span><span class=\"pm\">~~~~~~~^~~~~~~~~~~~~~</span>\n<span class=\"gr\">TypeError</span>: <span class=\"n\">unsupported operand type(s) for /: &#39;str&#39; and &#39;str&#39;</span>\n</pre></div>\n</span>",
+          "mimetype": "application/vnd.marimo+traceback"
+        }
+      ]
+    }
+  ]
+}

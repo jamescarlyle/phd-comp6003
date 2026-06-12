@@ -1,90 +1,74 @@
-"""\
-Test and visualize the performance of a trained controller for
-examples/hopper/evolve-feedforward.py on the Hopper-v5 environment.
+#!/usr/bin/env python3
+"""
+Render the saved Hopper winner genome to an MP4 video.
 """
 
 import os
-import pickle
 import sys
-
+import glob
+import shutil
+import pickle
 import gymnasium as gym
+import numpy as np
 import neat
 
 
-def run_episodes(net, episodes=5, render=True):
-    """Run a few episodes using the provided network and optionally render."""
-    if render:
-        env = gym.make("Hopper-v5", render_mode="human")
-    else:
-        env = gym.make("Hopper-v5")
-
+def load_genome_and_config():
     try:
-        rewards = []
-        for episode in range(episodes):
-            observation, info = env.reset()
-            total_reward = 0.0
-            step = 0
-
-            while True:
-                step += 1
-                action = net.activate(observation)
-
-                observation, reward, terminated, truncated, info = env.step(action)
-                total_reward += reward
-
-                if terminated or truncated:
-                    break
-
-            rewards.append(total_reward)
-            print(
-                f"Episode {episode + 1}: steps={step}, total_reward={total_reward:.2f}",
-            )
-    finally:
-        env.close()
-
-    if rewards:
-        avg = sum(rewards) / len(rewards)
-        print(f"\nAverage reward over {len(rewards)} episodes: {avg:.2f}")
-
-
-def load_and_test(genome_path, config_path, episodes=5, render=True):
-    """Load a saved genome and test it on Hopper-v5."""
-    # Load the config.
-    config = neat.Config(
-        neat.DefaultGenome,
-        neat.DefaultReproduction,
-        neat.DefaultSpeciesSet,
-        neat.DefaultStagnation,
-        config_path,
-    )
-
-    # Load the genome.
-    with open(genome_path, "rb") as f:
-        genome = pickle.load(f)
-
-    print("Loaded genome:")
-    print(genome)
-
-    # Create the network and run episodes.
-    net = neat.nn.FeedForwardNetwork.create(genome, config)
-    run_episodes(net, episodes=episodes, render=render)
-
-
-if __name__ == "__main__":
-    # Determine local paths.
-    local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, "config-feedforward")
-
-    # Optional argument: custom path to winner genome.
-    if len(sys.argv) > 1:
-        genome_path = sys.argv[1]
-    else:
-        genome_path = os.path.join(local_dir, "winner-feedforward.pickle")
-
-    if not os.path.exists(genome_path):
-        print(f"Error: Genome file not found at {genome_path}")
-        print("Please train a network first by running evolve-feedforward.py")
+        with open('winner_hopper_genome.pkl', 'rb') as f:
+            genome = pickle.load(f)
+    except FileNotFoundError:
+        print('Error: winner_hopper_genome.pkl not found. Run training first.')
         sys.exit(1)
 
-    print(f"Testing genome from: {genome_path}\n")
-    load_and_test(genome_path, config_path, episodes=5, render=True)
+    try:
+        with open('winner_hopper_config.pkl', 'rb') as f:
+            config = pickle.load(f)
+    except FileNotFoundError:
+        print('Error: winner_hopper_config.pkl not found. Run training first.')
+        sys.exit(1)
+
+    return genome, config
+
+
+def record_episode_mp4(genome, config, output_dir='hopper_videos', max_steps=3000):
+    os.makedirs(output_dir, exist_ok=True)
+
+    env = gym.make('Hopper-v5', render_mode='rgb_array', healthy_z_range=(0.5, 2.0), healthy_angle_range=(-0.4, 0.4), max_episode_steps=max_steps)
+    env.unwrapped.model.geom_size[0][:2] = [40, 40]
+    env.metadata['render_fps'] = 50
+
+    env = gym.wrappers.RecordVideo(
+        env,
+        video_folder=output_dir,
+        name_prefix='hopper-winner',
+        episode_trigger=lambda episode_id: True,
+        disable_logger=True,
+    )
+
+    net = neat.nn.FeedForwardNetwork.create(genome, config)
+
+    obs, info = env.reset()
+    terminated = False
+    truncated = False
+    total_reward = 0.0
+    step_count = 0
+    final_x = 0.0
+
+    while not (terminated or truncated) and step_count < max_steps:
+        action = np.array(np.clip(net.activate(obs), -1.0, 1.0), dtype=np.float32)
+        obs, reward, terminated, truncated, info = env.step(action)
+        total_reward += reward
+        final_x = info.get('x_position', final_x)
+        step_count += 1
+
+    env.close()
+
+    print(f'Steps: {step_count}')
+    print(f'Total reward: {total_reward:.2f}')
+    print(f'Final x position: {final_x:.2f}')
+
+
+if __name__ == '__main__':
+    genome, config = load_genome_and_config()
+    record_episode_mp4(genome, config)

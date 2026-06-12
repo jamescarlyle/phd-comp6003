@@ -97,5 +97,57 @@ Future work should explore **Neuromodulation**, where evolution controls not onl
 ### Final Code Architecture (Simplified)
 The system utilized a custom `OjaNetwork` class that manually computed the recurrent forward pass to ensure the weight matrix remained mutable throughout the agent's lifespan. The integration of `scipy.stats.wilcoxon` ensured the rigor of the final claims.
 
+### 1. **Corrected Oja's Rule**[1][2]
+The mathematical formula now correctly implements:
+$$\Delta w = \eta \cdot y(x - w \cdot y)$$
+
+This maintains weight normalization ($$\sum w_i^2 = 1$$) and performs proper PCA while preventing unbounded weight growth.[1]
+
+### 2. **Proper NEAT Interface**
+- Created `GenomeEvaluator` class with `__call__` method
+- Properly implements the callback interface required by `population.run()`
+- Manages environment lifecycle within the evaluator
+
+### 3. **Robust Recurrent Network**
+- Uses double-buffering pattern correctly (reads from `self.values`, writes to `new_values`)
+- Proper separation of pre- and post-synaptic values for Oja's rule
+
+### 4. **Adaptive Gradient Handling**
+- Properly modifies gravity vector each step to simulate tilting surface
+- Hopper learns real-time adaptation to changing physics
+- Slope increases gradually allowing smooth learning progression
+
+### 5. **Production-Grade Code Quality**
+- Comprehensive error handling and validation
+- Informative logging and progress tracking
+- Resource cleanup via `try/finally` blocks
+- Docstrings explaining key concepts
+- Proper CSV batching (not appending in loop)
+
+### 6. **Better Statistics**
+- Reports median in addition to mean (more robust)
+- Shows effect sizes explicitly
+- Includes warning about test assumptions
+
+The code now correctly tests whether **Oja's rule enables better real-time adaptation** to dynamic environmental changes (changing surface gradient). The weight normalization should help maintain stable learning even as the hopper encounters steeper slopes.
+
+Sources
+[1] 19.2 Models of Hebbian learning | Neuronal Dynamics online bookneuronaldynamics.epfl.ch › online › Ch19.S2.html https://neuronaldynamics.epfl.ch/online/Ch19.S2.html
+[2] Oja's rule - Wikipedia https://en.wikipedia.org/wiki/Oja's_rule
+[3] ◆ __init__() https://fossies.org/dox/Gymnasium-1.2.2/classgymnasium_1_1envs_1_1mujoco_1_1hopper__v5_1_1HopperEnv.html
+[4] MuJoCo Physics Engine - Emergent Mind https://www.emergentmind.com/topics/mujoco-physics-engine
+[5] Source code for nn.recurrent - NEAT-Python's documentation! https://neat-python.readthedocs.io/en/latest/_modules/nn/recurrent.html
+[6] Oja's plasticity rule overcomes several challenges of ... https://arxiv.org/html/2408.08408v1
+[7] Minari Documentation https://minari.farama.org/datasets/mujoco/hopper/medium-v0/
+[8] MuJoCo — Advanced Physics Simulation https://mujoco.org
+[9] Source code for ctrnn https://neat-python.readthedocs.io/en/latest/_modules/ctrnn.html
+[10] Hopper¶ https://gymnasium.org.cn/environments/mujoco/hopper/
+[11] Overview# https://mujoco.readthedocs.io/en/2.3.7/overview.html
+[12] Continuous-time recurrent neural network implementation https://neat-python.readthedocs.io/en/latest/ctrnn.html
+[13] Hopper - Gymnasium Documentation https://gymnasium.farama.org/v0.27.1/environments/mujoco/hopper/
+[14] Changing the geom mass fails to affect simulation properties? #1717 https://github.com/google-deepmind/mujoco/issues/1717
+[15] Need help with a NEAT implementation in Python : r/MLQuestions https://www.reddit.com/r/MLQuestions/comments/13oo4ck/need_help_with_a_neat_implementation_in_python/
+
+
 ### Summary of Convergence
 The breakthrough occurred when the researchers abandoned the "black-box" activation of the library in favor of a manual implementation, proving that in AI research, the fidelity of the mechanism is as important as the logic of the algorithm.
